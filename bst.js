@@ -69,117 +69,145 @@ const Tree = (arr) => {
       return root;
     }
   }
+  function find(root, value) {
+    if (root.data === null) {
+      console.log('Not found');
+    }
+    if (root.data === value) {
+      return root;
+    }
+    if (root.data < value) {
+      root = find(root.right, value);
+      return root;
+    } else if (root.data > value) {
+      root = find(root.left, value);
+      return root;
+    }
+    return root;
+  }
+
+  function height(root) {
+    if (root == null) return 0;
+    else {
+      let lheight = height(root.left);
+      let rheight = height(root.right);
+      if (lheight > rheight) return lheight + 1;
+      else return rheight + 1;
+    }
+  }
+
+  let levelArray = [];
+  const createlevelArray = (num) => {
+    levelArray.push(num);
+  };
+
+  function printCurrentLevel(root = BT.root, level) {
+    if (root == null) return levelArray;
+    if (level == 1) createlevelArray(root.data);
+    else if (level > 1) {
+      printCurrentLevel(root.left, level - 1);
+      printCurrentLevel(root.right, level - 1);
+    }
+  }
+
+  function printLevelOrder(root) {
+    let h = height(root);
+    let i;
+    for (i = 1; i <= h; i++) printCurrentLevel(root, i);
+  }
+
+  let inOrderArr = [];
+  function inOrder(root) {
+    if (root != null) {
+      inOrder(root.left);
+      inOrderArr.push(root.data);
+      inOrder(root.right);
+    }
+    return inOrderArr;
+  }
+
+  let preOrderArr = [];
+  function preOrder(root) {
+    if (root != null) {
+      preOrderArr.push(root.data);
+      preOrder(root.left);
+      preOrder(root.right);
+    }
+    return preOrderArr;
+  }
+  let postOrderArr = [];
+  function postOrder(root) {
+    if (root != null) {
+      postOrder(root.left);
+      postOrder(root.right);
+      postOrderArr.push(root.data);
+    }
+    return postOrderArr;
+  }
+  function findDepth(root, x) {
+    if (root == null) return -1;
+
+    let dist = -1;
+
+    if (
+      root.data == x ||
+      (dist = findDepth(root.left, x)) >= 0 ||
+      (dist = findDepth(root.right, x)) >= 0
+    )
+      return dist + 1;
+
+    return dist;
+  }
+  const isBalanced = (root = BT.root) => {
+    if (root === null) return true;
+    if (
+      Math.abs(height(root.left) - height(root.right)) <= 1 &&
+      isBalanced(root.left) === true &&
+      isBalanced(root.right) === true
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  const rebalance = (root = BT.root) => {
+    BT.root = buildTree(inOrder(root));
+  };
 
   let root = null || buildTree(arr);
 
-  return { root, insertNode, deleteNode };
+  return {
+    levelArray,
+    root,
+    insertNode,
+    deleteNode,
+    find,
+    height,
+    printCurrentLevel,
+    printLevelOrder,
+    isBalanced,
+    findDepth,
+    inOrder,
+    preOrder,
+    postOrder,
+    rebalance,
+  };
 };
 
 let BT = Tree([1, 7, 4, 23, 8, 9, 4, 3, 22, 5, 7, 9, 67, 6345, 324]);
 
-function find(root, value) {
-  if (root.data === null) {
-    console.log('Not found');
-  }
-  if (root.data === value) {
-    return root;
-  }
-  if (root.data < value) {
-    root = find(root.right, value);
-    return root;
-  } else if (root.data > value) {
-    root = find(root.left, value);
-    return root;
-  }
-  return root;
-}
+console.log(BT.isBalanced());
 
-function height(root) {
-  if (root == null) return 0;
-  else {
-    let lheight = height(root.left);
-    let rheight = height(root.right);
-    if (lheight > rheight) return lheight + 1;
-    else return rheight + 1;
-  }
-}
+BT.printLevelOrder(BT.root);
+console.log(BT.levelArray);
 
-function printCurrentLevel(root, level) {
-  if (root == null) return;
-  if (level == 1) console.log(root.data + ' ');
-  else if (level > 1) {
-    printCurrentLevel(root.left, level - 1);
-    printCurrentLevel(root.right, level - 1);
-  }
-}
+BT.insertNode(43, BT.root);
+BT.insertNode(41, BT.root);
+BT.insertNode(90, BT.root);
+console.log(BT.isBalanced());
+BT.rebalance(BT.root);
+console.log(BT.isBalanced());
 
-function printLevelOrder(root = BT.root) {
-  let h = height(root);
-  let i;
-  for (i = 1; i <= h; i++) printCurrentLevel(root, i);
-}
-
-let inOrderArr = [];
-function inOrder(root) {
-  if (root != null) {
-    inOrder(root.left);
-    inOrderArr.push(root.data);
-    inOrder(root.right);
-  }
-  return inOrderArr;
-}
-
-let preOrderArr = [];
-function preOrder(root) {
-  if (root != null) {
-    preOrderArr.push(root.data);
-    preOrder(root.left);
-    preOrder(root.right);
-  }
-  return preOrderArr;
-}
-let postOrderArr = [];
-function postOrder(root) {
-  if (root != null) {
-    postOrder(root.left);
-    postOrder(root.right);
-    postOrderArr.push(root.data);
-  }
-  return postOrderArr;
-}
-function findDepth(root, x) {
-  if (root == null) return -1;
-
-  let dist = -1;
-
-  if (
-    root.data == x ||
-    (dist = findDepth(root.left, x)) >= 0 ||
-    (dist = findDepth(root.right, x)) >= 0
-  )
-    return dist + 1;
-
-  return dist;
-}
-const isBalanced = (root = BT.root) => {
-  if (root === null) return true;
-  if (
-    Math.abs(height(root.left) - height(root.right)) <= 1 &&
-    isBalanced(root.left) === true &&
-    isBalanced(root.right) === true
-  ) {
-    return true;
-  }
-  return false;
-};
-
-const traverse = (root = BT.root, array = []) => {
-  array.push(root.data);
-  if (root.leftChild !== null) traverse(root.leftChild, array);
-  if (rootNode.right !== null) traverse(root.rightChild, array);
-  return array;
-};
-
-const reBalance = (root = BT.root) => {
-  return isBalanced(root) ? root : (root = Tree(traverse()).root);
-};
+console.log(BT.preOrder(BT.root));
+console.log(BT.postOrder(BT.root));
+console.log(BT.inOrder(BT.root));
